@@ -1,0 +1,15 @@
+{
+  "name": "tienda-videojuegos-mvc",
+  "version": "1.0.0",
+  "description": "Tienda de videojuegos construida con Node.js, Express y arquitectura MVC. Proyecto educativo para explicar back-end, HTTP y separacion de responsabilidades.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["mvc", "express", "educativo", "sena"],
+  "author": "Juan Maurello",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

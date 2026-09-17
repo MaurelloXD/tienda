@@ -1,0 +1,14 @@
+# Dependencias instaladas por npm.
+# No se suben al repositorio: cualquiera las reconstruye con "npm install".
+node_modules/
+
+# Variables de entorno y archivos locales
+.env
+
+# Basura del sistema operativo y del editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Logs
+*.log
