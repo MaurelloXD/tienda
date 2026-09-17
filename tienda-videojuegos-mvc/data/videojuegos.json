@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "nombre": "Minecraft",
+        "precio": 80000,
+        "categoria": "Aventura"
+    },
+    {
+        "id": 2,
+        "nombre": "Mario Bros",
+        "precio": 90000,
+        "categoria": "Plataformas"
+    },
+    {
+        "id": 3,
+        "nombre": "GTA V",
+        "precio": 100000,
+        "categoria": "Accion"
+    },
+    {
+        "id": 4,
+        "nombre": "FIFA",
+        "precio": 120000,
+        "categoria": "Deportes"
+    }
+]
