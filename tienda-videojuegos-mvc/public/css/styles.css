@@ -1,0 +1,461 @@
+/* ============================================================
+   TOKENS DE DISEÑO
+   Un color fijo por cada actor/rol: asi el ojo aprende la
+   asociacion (View=ambar, Controller=azul, Model/Repository=verde)
+   sin que nadie tenga que explicarlo en voz alta.
+   ============================================================ */
+:root {
+    --bg-base: #14121f;
+    --bg-panel: #1d1a2e;
+    --bg-panel-alt: #211d35;
+    --borde: #322c4c;
+
+    --texto: #f1effb;
+    --texto-tenue: #9a93be;
+
+    --color-view: #ffb454;
+    /* Jugador / View */
+    --color-controller: #5fa8ff;
+    /* Vendedor / Controller */
+    --color-model: #35d399;
+    /* Bodeguero / Model */
+    --color-repository: #ff6fa8;
+    /* Repository */
+    --color-error: #ff6b6b;
+
+    --radio: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg-base);
+    color: var(--texto);
+    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+.encabezado {
+    padding: 28px 32px 20px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.encabezado h1 {
+    margin: 0 0 6px;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+}
+
+.subtitulo {
+    margin: 0;
+    color: var(--texto-tenue);
+    font-size: 0.95rem;
+    max-width: 640px;
+}
+
+/* ============================================================
+   DISPOSICION GENERAL: tienda a la izquierda, sala a la derecha
+   ============================================================ */
+.disposicion {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    padding: 24px 32px 90px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .disposicion {
+        grid-template-columns: 1fr;
+    }
+}
+
+h2 {
+    font-size: 1.05rem;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   TIENDA
+   ============================================================ */
+.buscador {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.buscador input {
+    flex: 1;
+}
+
+input {
+    background: var(--bg-panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 10px 14px;
+    color: var(--texto);
+    font-size: 0.95rem;
+}
+
+input:focus {
+    outline: 2px solid var(--color-controller);
+    outline-offset: 1px;
+}
+
+.boton {
+    border: none;
+    border-radius: var(--radio);
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.boton:active {
+    transform: scale(0.97);
+}
+
+.boton-primario {
+    background: var(--color-controller);
+    color: #0c1220;
+}
+
+.boton-secundario {
+    background: transparent;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+}
+
+.boton:hover {
+    opacity: 0.88;
+}
+
+.lista-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+}
+
+.lista-videojuegos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lista-videojuegos li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 12px 16px;
+}
+
+.lista-videojuegos li.cargando {
+    color: var(--texto-tenue);
+    justify-content: flex-start;
+}
+
+.nombre-juego {
+    font-weight: 600;
+}
+
+.categoria-juego {
+    color: var(--texto-tenue);
+    font-size: 0.85rem;
+    margin-left: 8px;
+}
+
+.precio-juego {
+    color: var(--color-model);
+    font-weight: 700;
+}
+
+/* Estadisticas */
+.estadisticas {
+    margin-top: 28px;
+}
+
+.grilla-estadisticas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.dato-estadistica {
+    background: var(--bg-panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 12px 14px;
+}
+
+.dato-estadistica .etiqueta {
+    display: block;
+    color: var(--texto-tenue);
+    font-size: 0.78rem;
+    margin-bottom: 2px;
+}
+
+.dato-estadistica .valor {
+    font-weight: 700;
+}
+
+/* Formulario */
+.formulario-agregar {
+    margin-top: 28px;
+}
+
+#formularioAgregar {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.4fr auto;
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    #formularioAgregar {
+        grid-template-columns: 1fr;
+    }
+}
+
+.lista-errores {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    color: var(--color-error);
+    font-size: 0.85rem;
+}
+
+/* ============================================================
+   SALA DE MAQUINAS
+   ============================================================ */
+.sala-maquinas {
+    background: var(--bg-panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+.titulo-sala {
+    margin: 0 0 14px;
+    font-size: 1rem;
+}
+
+.pestanas {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-panel-alt);
+    border-radius: var(--radio);
+    padding: 4px;
+    margin-bottom: 18px;
+}
+
+.pestana {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--texto-tenue);
+    padding: 8px 6px;
+    font-size: 0.8rem;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.pestana.activa {
+    background: var(--bg-base);
+    color: var(--texto);
+}
+
+/* Utilidad generica: oculta cualquier elemento que la tenga */
+.oculto {
+    display: none;
+}
+
+.fila-actores {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.actor {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 6px;
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+    opacity: 0.5;
+    transform: scale(0.96);
+    cursor: pointer;
+    transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.actor:hover {
+    opacity: 0.75;
+}
+
+.actor:focus-visible {
+    outline: 2px solid var(--texto);
+    outline-offset: 2px;
+}
+
+/* Seleccionado por clic: contorno neutro, independiente del color de la animacion */
+.actor.seleccionado {
+    opacity: 1;
+    outline: 2px dashed var(--texto-tenue);
+    outline-offset: 3px;
+}
+
+.icono-actor {
+    font-size: 1.5rem;
+}
+
+.nombre-actor {
+    font-size: 0.72rem;
+    color: var(--texto-tenue);
+}
+
+/* Cada actor se ilumina con el color de su rol cuando esta activo */
+.actor[data-actor="jugador"].activo,
+.actor[data-actor="view"].activo {
+    opacity: 1;
+    transform: scale(1.05);
+    border-color: var(--color-view);
+    box-shadow: 0 0 0 1px var(--color-view);
+}
+
+.actor[data-actor="vendedor"].activo,
+.actor[data-actor="controller"].activo {
+    opacity: 1;
+    transform: scale(1.05);
+    border-color: var(--color-controller);
+    box-shadow: 0 0 0 1px var(--color-controller);
+}
+
+.actor[data-actor="bodeguero"].activo,
+.actor[data-actor="model"].activo {
+    opacity: 1;
+    transform: scale(1.05);
+    border-color: var(--color-model);
+    box-shadow: 0 0 0 1px var(--color-model);
+}
+
+.actor[data-actor="repository"].activo {
+    opacity: 1;
+    transform: scale(1.05);
+    border-color: var(--color-repository);
+    box-shadow: 0 0 0 1px var(--color-repository);
+}
+
+.descripcion-actor {
+    background: var(--bg-panel-alt);
+    border-radius: var(--radio);
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--texto-tenue);
+    margin: 0 0 14px;
+}
+
+.lista-pasos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.lista-pasos li {
+    background: var(--bg-panel-alt);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.85rem;
+    border-left: 3px solid transparent;
+    opacity: 0.5;
+    transition: opacity 0.3s ease, border-color 0.3s ease;
+}
+
+.lista-pasos li.paso-vacio {
+    opacity: 0.6;
+    font-style: italic;
+}
+
+/* El paso que se esta narrando en este momento */
+.lista-pasos li.activo {
+    opacity: 1;
+    font-weight: 600;
+    border-left-color: var(--color-controller);
+}
+
+/* Pasos que ya pasaron: se quedan visibles pero atenuados, como historial */
+.lista-pasos li.completado {
+    opacity: 0.75;
+}
+
+.nota-tecnica {
+    margin: 12px 0 0;
+    font-size: 0.78rem;
+    color: var(--texto-tenue);
+}
+
+#jsonCrudo {
+    background: var(--bg-panel-alt);
+    border-radius: var(--radio);
+    padding: 14px;
+    font-size: 0.78rem;
+    overflow-x: auto;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.enlace-json {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--color-controller);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.enlace-json:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================
+   BARRA INFERIOR
+   ============================================================ */
+.barra-inferior {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-panel);
+    border-top: 1px solid var(--borde);
+    padding: 10px 32px;
+    font-size: 0.82rem;
+    color: var(--texto-tenue);
+    font-family: "Courier New", monospace;
+}
+
+.cargando {
+    color: var(--texto-tenue);
+    font-style: italic;
+}

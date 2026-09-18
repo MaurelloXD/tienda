@@ -1,26 +1,44 @@
 [
-    {
-        "id": 1,
-        "nombre": "Minecraft",
-        "precio": 80000,
-        "categoria": "Aventura"
-    },
-    {
-        "id": 2,
-        "nombre": "Mario Bros",
-        "precio": 90000,
-        "categoria": "Plataformas"
-    },
-    {
-        "id": 3,
-        "nombre": "GTA V",
-        "precio": 100000,
-        "categoria": "Accion"
-    },
-    {
-        "id": 4,
-        "nombre": "FIFA",
-        "precio": 120000,
-        "categoria": "Deportes"
-    }
+  {
+    "id": 1,
+    "nombre": "Minecraft",
+    "precio": 80000,
+    "categoria": "Aventura"
+  },
+  {
+    "id": 2,
+    "nombre": "Mario Bros",
+    "precio": 90000,
+    "categoria": "Plataformas"
+  },
+  {
+    "id": 3,
+    "nombre": "GTA V",
+    "precio": 100000,
+    "categoria": "Accion"
+  },
+  {
+    "id": 4,
+    "nombre": "FIFA",
+    "precio": 120000,
+    "categoria": "Deportes"
+  },
+  {
+    "id": 5,
+    "nombre": "Resident Evil 4",
+    "precio": 900000,
+    "categoria": "Terror"
+  },
+  {
+    "id": 6,
+    "nombre": "PES",
+    "precio": 1200000,
+    "categoria": "Deportes"
+  },
+  {
+    "id": 7,
+    "nombre": "Bornout",
+    "precio": 90000,
+    "categoria": "Carreras"
+  }
 ]

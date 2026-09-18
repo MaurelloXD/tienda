@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tienda de Videojuegos MVC</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <h1>🎮 Tienda de Videojuegos</h1>
+        <p class="subtitulo">La tienda de la izquierda es lo que ve cualquier persona. La sala de la derecha es lo que
+            pasa por dentro.</p>
+    </header>
+
+    <main class="disposicion">
+
+        <!-- ==================== TIENDA (Front-End que interactua el jugador) ==================== -->
+        <section class="tienda" aria-label="Tienda de videojuegos">
+
+            <div class="buscador">
+                <input id="campoBuscar" type="text" placeholder="Buscar videojuego..." autocomplete="off" />
+                <button id="botonBuscar" class="boton boton-primario">Buscar</button>
+                <button id="botonLimpiar" class="boton boton-secundario">Ver todos</button>
+            </div>
+
+            <div class="lista-encabezado">
+                <h2>Videojuegos</h2>
+                <button id="botonOrdenar" class="boton boton-secundario">Ordenar por precio ↓</button>
+            </div>
+
+            <ul id="listaVideojuegos" class="lista-videojuegos">
+                <li class="cargando">Cargando videojuegos...</li>
+            </ul>
+
+            <section class="estadisticas" aria-label="Estadisticas">
+                <h2>Estadisticas</h2>
+                <div id="panelEstadisticas" class="grilla-estadisticas">
+                    <span class="cargando">Calculando...</span>
+                </div>
+            </section>
+
+            <section class="formulario-agregar" aria-label="Agregar videojuego">
+                <h2>Agregar videojuego</h2>
+                <form id="formularioAgregar">
+                    <input name="nombre" type="text" placeholder="Nombre" required />
+                    <input name="precio" type="number" placeholder="Precio" min="1" required />
+                    <input name="categoria" type="text" placeholder="Categoria" required />
+                    <button type="submit" class="boton boton-primario">Agregar</button>
+                </form>
+                <ul id="listaErrores" class="lista-errores"></ul>
+            </section>
+
+        </section>
+
+        <!-- ==================== SALA DE MAQUINAS (lo que pasa en el Back-End) ==================== -->
+        <aside class="sala-maquinas" aria-label="Sala de maquinas">
+
+            <h2 class="titulo-sala">🔍 Sala de máquinas</h2>
+
+            <div class="pestanas" role="tablist">
+                <button class="pestana activa" data-pestana="restaurante" role="tab">Restaurante</button>
+                <button class="pestana" data-pestana="tecnico" role="tab">Técnico (MVC)</button>
+                <button class="pestana" data-pestana="json" role="tab">JSON crudo</button>
+            </div>
+
+            <!-- Panel 1: la analogia, con los mismos personajes de la tienda -->
+            <div class="panel-pestana" data-panel="restaurante">
+                <div class="fila-actores">
+                    <div class="actor" data-actor="jugador" tabindex="0" role="button">
+                        <span class="icono-actor">🧑</span>
+                        <span class="nombre-actor">Jugador</span>
+                    </div>
+                    <div class="actor" data-actor="vendedor" tabindex="0" role="button">
+                        <span class="icono-actor">🤵</span>
+                        <span class="nombre-actor">Vendedor</span>
+                    </div>
+                    <div class="actor" data-actor="bodeguero" tabindex="0" role="button">
+                        <span class="icono-actor">👨‍🍳</span>
+                        <span class="nombre-actor">Bodeguero</span>
+                    </div>
+                </div>
+                <p class="descripcion-actor oculto" id="descripcionActorRestaurante"></p>
+                <ol class="lista-pasos" id="pasosRestaurante">
+                    <li class="paso-vacio">Realiza una accion en la tienda para ver que pasa aqui.</li>
+                </ol>
+            </div>
+
+            <!-- Panel 2: el mismo flujo, en vocabulario tecnico -->
+            <div class="panel-pestana oculto" data-panel="tecnico">
+                <div class="fila-actores">
+                    <div class="actor" data-actor="view" tabindex="0" role="button">
+                        <span class="icono-actor">🖥️</span>
+                        <span class="nombre-actor">View</span>
+                    </div>
+                    <div class="actor" data-actor="controller" tabindex="0" role="button">
+                        <span class="icono-actor">🎮</span>
+                        <span class="nombre-actor">Controller</span>
+                    </div>
+                    <div class="actor" data-actor="model" tabindex="0" role="button">
+                        <span class="icono-actor">🧠</span>
+                        <span class="nombre-actor">Model</span>
+                    </div>
+                    <div class="actor" data-actor="repository" tabindex="0" role="button">
+                        <span class="icono-actor">📁</span>
+                        <span class="nombre-actor">Repository</span>
+                    </div>
+                </div>
+                <p class="descripcion-actor oculto" id="descripcionActorTecnico"></p>
+                <ol class="lista-pasos" id="pasosTecnico">
+                    <li class="paso-vacio">Realiza una accion en la tienda para ver que pasa aqui.</li>
+                </ol>
+                <p class="nota-tecnica">El Bodeguero de la otra pestaña en realidad hace dos trabajos: pensar
+                    (<strong>Model</strong>) y abrir la bodega (<strong>Repository</strong>).</p>
+            </div>
+
+            <!-- Panel 3: la respuesta cruda, tal como la ve el navegador -->
+            <div class="panel-pestana oculto" data-panel="json">
+                <pre id="jsonCrudo">{}</pre>
+                <a id="enlaceJson" class="enlace-json" href="/api/videojuegos" target="_blank" rel="noopener">Abrir esta
+                    respuesta en una pestaña nueva ↗</a>
+            </div>
+
+        </aside>
+
+    </main>
+
+    <footer class="barra-inferior">
+        <span id="ultimaPeticion">Última petición: —</span>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+
+</html>
