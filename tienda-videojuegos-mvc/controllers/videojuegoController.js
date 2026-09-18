@@ -1,132 +1,138 @@
 /**
  * controllers/videojuegoController.js
  *
- * El Controller es el "Vendedor": recibe lo que pide el Jugador,
- * se lo lleva al Model (el "Bodeguero"), y devuelve la respuesta.
+ * ============================================================
+ * ANTES de aplicar el principio de Responsabilidad Unica (SRP).
+ * ============================================================
  *
- * Lo que NO hace un Controller es importante:
- * no busca en el archivo el mismo, no decide si un precio es valido,
- * no arma HTML. Solo coordina.
+ * Este archivo mezcla, en un mismo lugar:
+ *   1. El acceso al archivo de datos (leer y escribir el JSON).
+ *   2. Las reglas de negocio (validar, buscar, ordenar, calcular).
+ *   3. La coordinacion de la peticion HTTP (lo que si es trabajo
+ *      de un Controller).
  *
- * Cada funcion tambien arma una "traza": una lista de pasos que explica,
- * en dos vocabularios distintos (restaurante y tecnico), que fue pasando
- * por dentro del programa. Esa traza es la que anima el panel derecho
- * de la interfaz ("la sala de maquinas"). No cambia el resultado real,
- * solo lo explica.
+ * Tiene, por lo menos, TRES razones distintas para cambiar:
+ * si cambia el formato del archivo de datos, si cambia una regla
+ * de negocio, o si cambia el formato de la respuesta HTTP.
+ * Eso es exactamente lo que el Principio de Responsabilidad Unica
+ * dice que hay que evitar: "una clase o modulo deberia tener una
+ * sola razon para cambiar".
+ *
+ * Compara este archivo con la version en la rama "main": alli el
+ * mismo trabajo esta repartido en tres archivos (Controller, Model
+ * y Repository), cada uno con una sola responsabilidad.
  */
 
-const model = require('../models/videojuegoModel');
+const fs = require('fs');
+const path = require('path');
 
-/**
- * GET /api/videojuegos
- * GET /api/videojuegos?buscar=mario
- */
+const RUTA_ARCHIVO = path.join(__dirname, '..', 'data', 'videojuegos.json');
+
 function obtenerVideojuegos(peticion, respuesta) {
+    // --- Acceso a datos, mezclado directamente aqui ---
+    const contenido = fs.readFileSync(RUTA_ARCHIVO, 'utf-8');
+    const todos = JSON.parse(contenido);
+
+    // --- Regla de negocio (busqueda), mezclada directamente aqui ---
     const textoBusqueda = peticion.query.buscar;
-    const hayBusqueda = Boolean(textoBusqueda);
+    let videojuegos = todos;
 
-    const videojuegos = hayBusqueda
-        ? model.buscarPorNombre(textoBusqueda)
-        : model.obtenerTodos();
+    if (textoBusqueda) {
+        const texto = textoBusqueda.trim().toLowerCase();
+        videojuegos = todos.filter((juego) => juego.nombre.toLowerCase().includes(texto));
+    }
 
-    const traza = hayBusqueda
-        ? [
-            { codigo: 'view', restaurante: `Pediste buscar "${textoBusqueda}"`, tecnico: `Pediste buscar "${textoBusqueda}"` },
-            { codigo: 'http_salida', restaurante: 'Tu pedido sale hacia la cocina', tecnico: `GET /api/videojuegos?buscar=${textoBusqueda}` },
-            { codigo: 'controller', restaurante: 'El Vendedor recibe tu pedido', tecnico: 'El Controller recibe la peticion y llama al Model' },
-            { codigo: 'model', restaurante: 'El Bodeguero busca en los estantes, uno por uno', tecnico: 'El Model ejecuta busqueda lineal sobre el arreglo' },
-            { codigo: 'repository', restaurante: 'El Bodeguero abre la bodega para revisar', tecnico: 'El Repository lee data/videojuegos.json' },
-            { codigo: 'http_entrada', restaurante: 'El resultado vuelve a tu mesa', tecnico: `Respuesta 200 OK con ${videojuegos.length} resultado(s)` },
-            { codigo: 'view_final', restaurante: 'Ves el resultado en tu mesa', tecnico: 'La Vista pinta el resultado en pantalla' }
-        ]
-        : [
-            { codigo: 'view', restaurante: 'Entraste a la tienda', tecnico: 'Se cargo la pagina principal' },
-            { codigo: 'http_salida', restaurante: 'Pides ver el menu completo', tecnico: 'GET /api/videojuegos' },
-            { codigo: 'controller', restaurante: 'El Vendedor recibe tu pedido', tecnico: 'El Controller recibe la peticion y llama al Model' },
-            { codigo: 'model', restaurante: 'El Bodeguero revisa todo el inventario', tecnico: 'El Model pide todos los registros' },
-            { codigo: 'repository', restaurante: 'El Bodeguero abre la bodega completa', tecnico: 'El Repository lee data/videojuegos.json' },
-            { codigo: 'http_entrada', restaurante: 'El menu completo llega a tu mesa', tecnico: `Respuesta 200 OK con ${videojuegos.length} videojuego(s)` },
-            { codigo: 'view_final', restaurante: 'Ves el menu completo', tecnico: 'La Vista pinta la lista en pantalla' }
-        ];
+    // --- Respuesta HTTP ---
+    respuesta.json({ exito: true, cantidad: videojuegos.length, videojuegos });
+}
+
+function ordenarVideojuegos(peticion, respuesta) {
+    const contenido = fs.readFileSync(RUTA_ARCHIVO, 'utf-8');
+    const todos = JSON.parse(contenido);
+    const direccion = peticion.query.direccion === 'desc' ? 'desc' : 'asc';
+
+    // --- Algoritmo de ordenamiento (burbuja), mezclado directamente aqui ---
+    const lista = [...todos];
+    for (let i = 0; i < lista.length - 1; i++) {
+        for (let j = 0; j < lista.length - 1 - i; j++) {
+            const debeIntercambiar =
+                direccion === 'desc'
+                    ? lista[j].precio < lista[j + 1].precio
+                    : lista[j].precio > lista[j + 1].precio;
+
+            if (debeIntercambiar) {
+                const temporal = lista[j];
+                lista[j] = lista[j + 1];
+                lista[j + 1] = temporal;
+            }
+        }
+    }
+
+    respuesta.json({ exito: true, direccion, videojuegos: lista });
+}
+
+function obtenerEstadisticas(peticion, respuesta) {
+    const contenido = fs.readFileSync(RUTA_ARCHIVO, 'utf-8');
+    const videojuegos = JSON.parse(contenido);
+
+    // --- Algoritmo de agregacion, mezclado directamente aqui ---
+    let sumaPrecios = 0;
+    let masCaro = videojuegos[0];
+    let masBarato = videojuegos[0];
+
+    for (const juego of videojuegos) {
+        sumaPrecios += juego.precio;
+        if (juego.precio > masCaro.precio) masCaro = juego;
+        if (juego.precio < masBarato.precio) masBarato = juego;
+    }
 
     respuesta.json({
         exito: true,
-        cantidad: videojuegos.length,
-        videojuegos,
-        traza
+        estadisticas: {
+            cantidad: videojuegos.length,
+            promedio: Math.round(sumaPrecios / videojuegos.length),
+            masCaro,
+            masBarato
+        }
     });
 }
 
-/**
- * GET /api/videojuegos/ordenar?direccion=asc|desc
- */
-function ordenarVideojuegos(peticion, respuesta) {
-    const direccion = peticion.query.direccion === 'desc' ? 'desc' : 'asc';
-    const videojuegos = model.ordenarPorPrecio(direccion);
-    const textoDireccion = direccion === 'desc' ? 'de mayor a menor precio' : 'de menor a mayor precio';
-
-    const traza = [
-        { codigo: 'view', restaurante: `Pediste el menu ${textoDireccion}`, tecnico: `Pediste ordenar ${textoDireccion}` },
-        { codigo: 'http_salida', restaurante: 'El pedido sale hacia la cocina', tecnico: `GET /api/videojuegos/ordenar?direccion=${direccion}` },
-        { codigo: 'controller', restaurante: 'El Vendedor recibe el pedido', tecnico: 'El Controller recibe la peticion' },
-        { codigo: 'model', restaurante: 'El Bodeguero reordena los productos en el estante, comparando de a dos', tecnico: 'El Model ejecuta el algoritmo de ordenamiento burbuja' },
-        { codigo: 'http_entrada', restaurante: 'El menu ordenado llega a tu mesa', tecnico: 'Respuesta 200 OK con la lista ordenada' },
-        { codigo: 'view_final', restaurante: 'Ves el menu ya ordenado', tecnico: 'La Vista pinta la lista ordenada' }
-    ];
-
-    respuesta.json({ exito: true, direccion, videojuegos, traza });
-}
-
-/**
- * GET /api/videojuegos/estadisticas
- */
-function obtenerEstadisticas(peticion, respuesta) {
-    const estadisticas = model.calcularEstadisticas();
-
-    const traza = [
-        { codigo: 'view', restaurante: 'Pediste el resumen de la tienda', tecnico: 'Pediste las estadisticas' },
-        { codigo: 'http_salida', restaurante: 'El pedido sale hacia la cocina', tecnico: 'GET /api/videojuegos/estadisticas' },
-        { codigo: 'controller', restaurante: 'El Vendedor recibe el pedido', tecnico: 'El Controller recibe la peticion' },
-        { codigo: 'model', restaurante: 'El Bodeguero recorre todo el inventario sumando y comparando precios', tecnico: 'El Model recorre el arreglo acumulando total, maximo y minimo' },
-        { codigo: 'http_entrada', restaurante: 'El resumen llega a tu mesa', tecnico: 'Respuesta 200 OK con las estadisticas' },
-        { codigo: 'view_final', restaurante: 'Ves el resumen en pantalla', tecnico: 'La Vista pinta el resumen' }
-    ];
-
-    respuesta.json({ exito: true, estadisticas, traza });
-}
-
-/**
- * POST /api/videojuegos
- * Body esperado: { nombre, precio, categoria }
- */
 function crearVideojuego(peticion, respuesta) {
-    const resultado = model.crear(peticion.body);
-    const nombreEnviado = peticion.body.nombre || '(sin nombre)';
+    const datos = peticion.body;
+    const errores = [];
 
-    if (!resultado.exito) {
-        const traza = [
-            { codigo: 'view', restaurante: `Enviaste el formulario para agregar "${nombreEnviado}"`, tecnico: `Enviaste el formulario para agregar "${nombreEnviado}"` },
-            { codigo: 'http_salida', restaurante: 'El pedido nuevo sale hacia la cocina', tecnico: 'POST /api/videojuegos' },
-            { codigo: 'controller', restaurante: 'El Vendedor recibe el pedido y se lo lleva al Bodeguero', tecnico: 'El Controller recibe los datos y llama al Model' },
-            { codigo: 'model', restaurante: 'El Bodeguero revisa el pedido y encuentra algo mal', tecnico: 'El Model valida los datos y encuentra errores' },
-            { codigo: 'http_entrada', restaurante: 'La cocina devuelve el pedido con una nota de error', tecnico: 'Respuesta 400: peticion invalida' },
-            { codigo: 'view_final', restaurante: 'Ves el mensaje de error', tecnico: 'La Vista muestra los errores de validacion' }
-        ];
-
-        return respuesta.status(400).json({ exito: false, errores: resultado.errores, traza });
+    // --- Validacion, mezclada directamente aqui ---
+    if (!datos.nombre || datos.nombre.trim() === '') {
+        errores.push('El nombre no puede estar vacio.');
+    }
+    const precio = Number(datos.precio);
+    if (Number.isNaN(precio) || precio <= 0) {
+        errores.push('El precio debe ser un numero mayor que cero.');
+    }
+    if (!datos.categoria || datos.categoria.trim() === '') {
+        errores.push('La categoria no puede estar vacia.');
     }
 
-    const traza = [
-        { codigo: 'view', restaurante: `Enviaste el formulario para agregar "${resultado.videojuego.nombre}"`, tecnico: `Enviaste el formulario para agregar "${resultado.videojuego.nombre}"` },
-        { codigo: 'http_salida', restaurante: 'El pedido nuevo sale hacia la cocina', tecnico: 'POST /api/videojuegos' },
-        { codigo: 'controller', restaurante: 'El Vendedor recibe el pedido y se lo lleva al Bodeguero', tecnico: 'El Controller recibe los datos y llama al Model' },
-        { codigo: 'model', restaurante: 'El Bodeguero revisa el pedido: todo esta en orden', tecnico: 'El Model valida los datos: todo correcto' },
-        { codigo: 'repository', restaurante: 'El Bodeguero guarda el producto nuevo en la bodega', tecnico: 'El Repository escribe el nuevo registro en data/videojuegos.json' },
-        { codigo: 'http_entrada', restaurante: 'La cocina confirma que el pedido quedo listo', tecnico: 'Respuesta 201: creado' },
-        { codigo: 'view_final', restaurante: 'Ves el nuevo videojuego en el menu', tecnico: 'La Vista actualiza la lista' }
-    ];
+    if (errores.length > 0) {
+        return respuesta.status(400).json({ exito: false, errores });
+    }
 
-    respuesta.status(201).json({ exito: true, videojuego: resultado.videojuego, traza });
+    // --- Acceso a datos otra vez, mezclado directamente aqui ---
+    const contenido = fs.readFileSync(RUTA_ARCHIVO, 'utf-8');
+    const videojuegos = JSON.parse(contenido);
+    const nuevoId = videojuegos.length > 0 ? Math.max(...videojuegos.map((j) => j.id)) + 1 : 1;
+
+    const nuevoVideojuego = {
+        id: nuevoId,
+        nombre: datos.nombre.trim(),
+        precio,
+        categoria: datos.categoria.trim()
+    };
+
+    videojuegos.push(nuevoVideojuego);
+    fs.writeFileSync(RUTA_ARCHIVO, JSON.stringify(videojuegos, null, 2), 'utf-8');
+
+    respuesta.status(201).json({ exito: true, videojuego: nuevoVideojuego });
 }
 
 module.exports = {
